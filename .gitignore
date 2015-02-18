@@ -1,0 +1,35 @@
+# idea/intellij IDE project and module files
+.idea/
+*.iml
+
+# vim swap files
+*.sw[mnop]
+*~
+
+# python bytecode
+*.pyc
+
+# python coverage generated file
+.coverage
+
+# python packaging artifacts
+*.egg
+*.egg-info/
+build/
+dist/
+
+# rpm packaging artifacts
+rpmbuild/
+
+# log files
+*.log
+*.log.bz
+*.log.gz
+*.log.[0-9]
+*.log.[0-9][0-9]
+*.log.[0-9][0-9][0-9]
+*.\d\+\.log
+
+# config files containing repo secrets
+pip.conf
+setup.cfg
