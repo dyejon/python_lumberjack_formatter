@@ -9,8 +9,9 @@
 # python bytecode
 *.pyc
 
-# python coverage generated file
+# unit testing generated files
 .coverage
+.noseids
 
 # python packaging artifacts
 *.egg
