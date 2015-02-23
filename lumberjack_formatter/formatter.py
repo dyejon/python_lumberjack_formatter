@@ -73,6 +73,7 @@ class LumberjackFormatter(logging.Formatter):
     def _date_formatter(dt):
         assert isinstance(dt, datetime.datetime), 'expected datetime object'
 
+        # assume naive instances are UTC, as generated in the formatter
         if dt.tzinfo is None:
             return dt.isoformat() + 'Z'
         else:
@@ -122,6 +123,7 @@ class LumberjackFormatter(logging.Formatter):
             json_record['asctime']= self.formatTime(record, self.datefmt)
 
         # fields that are always present
+        # NOTE utcfromtimestamp will retain microtime, but return a naive datetime instance
         json_record['@message'] = record.getMessage()
         json_record['@timestamp'] = datetime.datetime.utcfromtimestamp(record.created)
         json_record['@source_host'] = socket.gethostname()
