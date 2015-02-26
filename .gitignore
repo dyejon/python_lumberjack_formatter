@@ -14,6 +14,7 @@
 .noseids
 
 # python packaging artifacts
+.eggs/
 *.egg
 *.egg-info/
 build/

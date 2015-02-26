@@ -3,7 +3,21 @@ import json
 import logging
 
 from mock import patch, sentinel
-from nose.tools import eq_, assert_in, assert_is_not_none
+from nose.tools import eq_
+
+# 2.6 assert functions
+try:
+    from nose.tools import assert_in, assert_is_not_none
+except ImportError:
+    def assert_in(item, collection, msg = None):
+        if msg is None:
+            msg = '%r not in %r' % (item, collection)
+        assert item in collection, msg
+
+    def assert_is_not_none(item, msg = None):
+        if msg is None:
+            '%r not None' % item
+        assert item is not None, msg
 
 from lumberjack_formatter.formatter import LumberjackFormatter
 
@@ -25,7 +39,7 @@ class LumberjackFormatter_Tests(MockingTestCase):
         self._patch(patch('time.time', return_value=time.mktime(time.localtime(0))+1e-06, autospec=True))
 
         extras = {'a': sentinel.a, 'b': sentinel.b}
-        standards = {k: getattr(sentinel, k) for k in self.STANDARD_LOG_ATTRS if k not in ('asctime','timestamp','message','msg',)}
+        standards = dict((k, getattr(sentinel, k)) for k in self.STANDARD_LOG_ATTRS if k not in ('asctime','timestamp','message','msg',))
         standards['msg'] = standards['message'] = sentinel.anymessage
 
         self.extras_rec = logging.makeLogRecord(extras)

@@ -29,7 +29,7 @@ class LumberjackFormatter(logging.Formatter):
     DEFAULT_ATTRS = ('exc_info', 'exc_text', 'filename', 'funcName', 'levelname', 'levelno', 'lineno', 'module',
                      'name', 'pathname', 'process', 'processName', 'relativeCreated', 'thread', 'threadName')
 
-    RESERVED_ATTR_DICT = {k: None for k in RESERVED_ATTRS}
+    RESERVED_ATTR_DICT = dict((k, None) for k in RESERVED_ATTRS)
 
     STANDARD_FORMATTERS = re.compile(r'\((.+?)\)', re.IGNORECASE)
 
