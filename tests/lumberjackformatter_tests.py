@@ -2,7 +2,14 @@ import time
 import json
 import logging
 
-from mock import patch, sentinel
+try:
+    # >=3.3
+    from unittest.mock import patch, sentinel
+except ImportError:
+    # <=3.2
+    from mock import patch, sentinel
+
+# >=2.7
 from nose.tools import eq_
 
 # 2.6 assert functions
@@ -39,13 +46,17 @@ class LumberjackFormatter_Tests(MockingTestCase):
         self._patch(patch('time.time', return_value=time.mktime(time.localtime(0))+1e-06, autospec=True))
 
         extras = {'a': sentinel.a, 'b': sentinel.b}
+
         standards = dict((k, getattr(sentinel, k)) for k in self.STANDARD_LOG_ATTRS if k not in ('asctime','timestamp','message','msg',))
         standards['msg'] = standards['message'] = sentinel.anymessage
+
+        mixed_items = extras.copy()
+        mixed_items.update(standards)
 
         self.extras_rec = logging.makeLogRecord(extras)
         self.standard_rec = logging.makeLogRecord(standards)
         self.blank_rec = logging.makeLogRecord({})
-        self.mixed_rec = logging.makeLogRecord(dict(extras.items() + standards.items()))
+        self.mixed_rec = logging.makeLogRecord(mixed_items)
 
     def tearDown(self):
         super(LumberjackFormatter_Tests, self).tearDown()
@@ -56,12 +67,11 @@ class LumberjackFormatter_Tests(MockingTestCase):
 
         msg = json.loads(formatter.format(self.extras_rec))
 
-        for k in msg.keys():
-            assert_in(k, ('a','b', '@timestamp', '@source_host', '@message'),
-                      msg='message should have only keys a, b, and required fields')
+        eq_(set(msg.keys()), set(('a','b','@timestamp','@source_host','@message')),
+            msg='message should have only keys a, b, and required fields')
 
-        eq_(msg['a'], str(sentinel.a), msg='sentinel value should be as expected')
-        eq_(msg['b'], str(sentinel.b), msg='sentinel value should be as expected')
+        eq_(msg['a'], 'sentinel.a', msg='sentinel value should be in a')
+        eq_(msg['b'], 'sentinel.b', msg='sentinel value should be in b')
 
     def test_parse_format_string(self):
         formatter = LumberjackFormatter(fmt='%(a) blah blah %(b)', all_standard_fields=False, all_extra_fields=False)
@@ -70,13 +80,11 @@ class LumberjackFormatter_Tests(MockingTestCase):
 
         log.info(str(msg))
 
-        for k in msg.keys():
-            assert_in(k, ('a','b', '@timestamp', '@source_host', '@message'),
-                      msg='message should have only keys a, b, and required fields')
+        eq_(set(msg.keys()), set(('a','b','@timestamp','@source_host','@message')),
+            msg='message should have only keys a, b, and required fields')
 
-        eq_(msg['a'], str(sentinel.a), msg='sentinel value a should be as expected')
-        eq_(msg['b'], str(sentinel.b), msg='sentinel value b should be as expected')
-
+        eq_(msg['a'], 'sentinel.a', msg='sentinel value should be in a')
+        eq_(msg['b'], 'sentinel.b', msg='sentinel value should be in b')
 
     # format - message is formatted
     def test_format_no_extras(self):
