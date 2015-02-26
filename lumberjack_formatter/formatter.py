@@ -54,6 +54,8 @@ class LumberjackFormatter(logging.Formatter):
         self._configured_fields = map(lambda f: '@%s' % f if f in ('timestamp', 'message', 'source_host') else f,
                                       self._configured_fields)
 
+        self._configured_fields = list(self._configured_fields)
+
     def parse_fmt(self):
         if isinstance(self._fmt, string_types):
             return list(LumberjackFormatter.STANDARD_FORMATTERS.findall(self._fmt))
