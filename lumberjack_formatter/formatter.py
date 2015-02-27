@@ -29,7 +29,7 @@ class LumberjackFormatter(logging.Formatter):
     DEFAULT_ATTRS = ('exc_info', 'exc_text', 'filename', 'funcName', 'levelname', 'levelno', 'lineno', 'module',
                      'name', 'pathname', 'process', 'processName', 'relativeCreated', 'thread', 'threadName')
 
-    RESERVED_ATTR_DICT = {k: None for k in RESERVED_ATTRS}
+    RESERVED_ATTR_DICT = dict((k, None) for k in RESERVED_ATTRS)
 
     STANDARD_FORMATTERS = re.compile(r'\((.+?)\)', re.IGNORECASE)
 
@@ -53,6 +53,8 @@ class LumberjackFormatter(logging.Formatter):
 
         self._configured_fields = map(lambda f: '@%s' % f if f in ('timestamp', 'message', 'source_host') else f,
                                       self._configured_fields)
+
+        self._configured_fields = list(self._configured_fields)
 
     def parse_fmt(self):
         if isinstance(self._fmt, string_types):
